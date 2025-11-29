@@ -21,40 +21,103 @@ public class Ride implements RideInterface {
         this.operator = operator;
     }
 
-    // Getters and Setters
-    public String getRideName() { return rideName; }
-    public void setRideName(String rideName) { this.rideName = rideName; }
+    // Getters and Setters...
 
-    public int getMaxRider() { return maxRider; }
-    public void setMaxRider(int maxRider) { this.maxRider = maxRider; }
-
-    public Employee getOperator() { return operator; }
-    public void setOperator(Employee operator) { this.operator = operator; }
-
-    public int getNumOfCycles() { return numOfCycles; }
-
-    // Interface methods (to be implemented in later commits)
+    // Part 3: Queue methods
     @Override
-    public void addVisitorToQueue(Visitor visitor) {}
+    public void addVisitorToQueue(Visitor visitor) {
+        if (waitingLine.offer(visitor)) {
+            System.out.println("Visitor " + visitor.getName() + " added to queue.");
+        } else {
+            System.out.println("Failed to add visitor to queue.");
+        }
+    }
 
     @Override
-    public void removeVisitorFromQueue() {}
+    public void removeVisitorFromQueue() {
+        Visitor visitor = waitingLine.poll();
+        if (visitor != null) {
+            System.out.println("Removed " + visitor.getName() + " from queue.");
+        } else {
+            System.out.println("Queue is empty.");
+        }
+    }
 
     @Override
-    public void printQueue() {}
+    public void printQueue() {
+        if (waitingLine.isEmpty()) {
+            System.out.println("Queue is empty.");
+            return;
+        }
+        System.out.println("Waiting line:");
+        for (Visitor v : waitingLine) {
+            System.out.println("- " + v.getName() + " (ID: " + v.getVisitorId() + ")");
+        }
+    }
+
+    // Part 4A: LinkedList methods
+    @Override
+    public void addVisitorToHistory(Visitor visitor) {
+        if (rideHistory.add(visitor)) {
+            System.out.println("Visitor " + visitor.getName() + " added to ride history.");
+        } else {
+            System.out.println("Failed to add visitor to history.");
+        }
+    }
 
     @Override
-    public void addVisitorToHistory(Visitor visitor) {}
+    public boolean checkVisitorFromHistory(Visitor visitor) {
+        boolean found = rideHistory.contains(visitor);
+        System.out.println("Visitor " + visitor.getName() + " in history: " + found);
+        return found;
+    }
 
     @Override
-    public boolean checkVisitorFromHistory(Visitor visitor) { return false; }
+    public int numberOfVisitors() {
+        int count = rideHistory.size();
+        System.out.println("Number of visitors in history: " + count);
+        return count;
+    }
 
     @Override
-    public int numberOfVisitors() { return 0; }
+    public void printRideHistory() {
+        if (rideHistory.isEmpty()) {
+            System.out.println("Ride history is empty.");
+            return;
+        }
+        System.out.println("Ride history:");
+        Iterator<Visitor> iterator = rideHistory.iterator();
+        while (iterator.hasNext()) {
+            Visitor v = iterator.next();
+            System.out.println("- " + v.getName() + " (ID: " + v.getVisitorId() + ")");
+        }
+    }
 
-    @Override
-    public void printRideHistory() {}
+    // Part 4B: Sorting
+    public void sortRideHistory(Comparator<Visitor> comparator) {
+        rideHistory.sort(comparator);
+        System.out.println("Ride history sorted.");
+    }
 
+    // Part 5: Run one cycle
     @Override
-    public void runOneCycle() {}
+    public void runOneCycle() {
+        if (operator == null) {
+            System.out.println("Cannot run ride: no operator assigned.");
+            return;
+        }
+        if (waitingLine.isEmpty()) {
+            System.out.println("Cannot run ride: no visitors in queue.");
+            return;
+        }
+
+        int count = 0;
+        while (count < maxRider && !waitingLine.isEmpty()) {
+            Visitor visitor = waitingLine.poll();
+            addVisitorToHistory(visitor);
+            count++;
+        }
+        numOfCycles++;
+        System.out.println("Ride run for one cycle. " + count + " visitors served.");
+    }
 }
