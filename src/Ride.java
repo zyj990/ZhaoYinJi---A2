@@ -1,4 +1,6 @@
 import java.util.*;
+import java.io.*;
+import java.util.Comparator;
 
 public class Ride implements RideInterface {
     private String rideName;
@@ -21,7 +23,17 @@ public class Ride implements RideInterface {
         this.operator = operator;
     }
 
-    // Getters and Setters...
+    // Getters and Setters
+    public String getRideName() { return rideName; }
+    public void setRideName(String rideName) { this.rideName = rideName; }
+
+    public int getMaxRider() { return maxRider; }
+    public void setMaxRider(int maxRider) { this.maxRider = maxRider; }
+
+    public Employee getOperator() { return operator; }
+    public void setOperator(Employee operator) { this.operator = operator; }
+
+    public int getNumOfCycles() { return numOfCycles; }
 
     // Part 3: Queue methods
     @Override
@@ -119,5 +131,39 @@ public class Ride implements RideInterface {
         }
         numOfCycles++;
         System.out.println("Ride run for one cycle. " + count + " visitors served.");
+    }
+
+    // Part 6: Export ride history to file
+    public void exportRideHistory(String filename) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filename))) {
+            for (Visitor visitor : rideHistory) {
+                writer.println(visitor.getName() + "," + visitor.getAge() + "," +
+                        visitor.getGender() + "," + visitor.getVisitorId() + "," +
+                        visitor.getTicketType());
+            }
+            System.out.println("Ride history exported to " + filename);
+        } catch (IOException e) {
+            System.out.println("Error exporting ride history: " + e.getMessage());
+        }
+    }
+
+    // Part 7: Import ride history from file
+    public void importRideHistory(String filename) {
+        try (Scanner scanner = new Scanner(new FileReader(filename))) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] parts = line.split(",");
+                if (parts.length == 5) {
+                    Visitor visitor = new Visitor(parts[0], Integer.parseInt(parts[1]),
+                            parts[2], parts[3], parts[4]);
+                    rideHistory.add(visitor);
+                }
+            }
+            System.out.println("Ride history imported from " + filename);
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + filename);
+        } catch (Exception e) {
+            System.out.println("Error importing ride history: " + e.getMessage());
+        }
     }
 }

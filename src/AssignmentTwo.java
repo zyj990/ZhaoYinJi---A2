@@ -5,6 +5,8 @@ public class AssignmentTwo {
         a2.partFourA();
         a2.partFourB();
         a2.partFive();
+        a2.partSix();
+        a2.partSeven();
     }
 
     public void partThree() {
@@ -56,6 +58,20 @@ public class AssignmentTwo {
         ride.printRideHistory();
     }
 
-    public void partSix() {}
-    public void partSeven() {}
+    public void partSix() {
+        System.out.println("\n=== Part 6: Export Ride History ===");
+        Ride ride = new Ride();
+        for (int i = 1; i <= 5; i++) {
+            ride.addVisitorToHistory(new Visitor("ExportVisitor" + i, 20 + i, "M", "EX00" + i, "Adult"));
+        }
+        ride.exportRideHistory("ride_history.csv");
+    }
+
+    public void partSeven() {
+        System.out.println("\n=== Part 7: Import Ride History ===");
+        Ride ride = new Ride();
+        ride.importRideHistory("ride_history.csv");
+        ride.numberOfVisitors();
+        ride.printRideHistory();
+    }
 }
